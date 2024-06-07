@@ -1,5 +1,7 @@
 package com.sky.entity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,16 +14,19 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ApiModel("员工实体")
 public class Employee implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private Long id;
 
+    @ApiModelProperty("用户名")
     private String username;
 
     private String name;
 
+    @ApiModelProperty("密码")
     private String password;
 
     private String phone;
