@@ -51,10 +51,10 @@ public class AutoFillAspect {
 
         //实体类在哪？
         Object[] args = joinPoint.getArgs();//获得当前被拦截的方法上的参数列表
-        Object entity = null;
-        if(args != null && args.length > 0){
-            entity = args[0];
+        if(args == null || args.length == 0){
+            return;
         }
+        Object entity = args[0];
 
         //赋的值是什么？
         LocalDateTime now = LocalDateTime.now();

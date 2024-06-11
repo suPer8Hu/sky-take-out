@@ -6,3 +6,8 @@ sky:
     database: sky_take_out
     username: root
     password: root
+  alioss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    access-key-id: LTAI5t5tapKX44eaAkq42YZV
+    access-key-secret: Q9uEeuUp6ankTr4FwEgOFYQtkNC081
+    bucket-name: reggie-itcast
