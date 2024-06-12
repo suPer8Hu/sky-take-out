@@ -30,5 +30,4 @@ public class AliOssConfiguration {
                 aliOssProperties.getAccessKeySecret(),
                 aliOssProperties.getBucketName());
     }
-
 }
