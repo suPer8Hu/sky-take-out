@@ -11,7 +11,6 @@ import com.sky.mapper.ShoppingCartMapper;
 import com.sky.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -77,5 +76,24 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             shoppingCartMapper.insert(shoppingCart);
         }
 
+    }
+
+    /**
+     * 查看购物车
+     * @return
+     */
+    public List<ShoppingCart> showShoppingCart() {
+        //select * from shopping_cart where user_id = ?
+        Long userId = BaseContext.getCurrentId();
+        List<ShoppingCart> list = shoppingCartMapper.getByUserId(userId);
+        return list;
+    }
+
+    /**
+     * 清空购物车
+     */
+    public void cleanShoppingCart() {//方法名体现的是业务功能
+        // delete from shopping_cart where user_id = ?
+        shoppingCartMapper.deleteByUserId(BaseContext.getCurrentId());//体现的是数据库操作
     }
 }
