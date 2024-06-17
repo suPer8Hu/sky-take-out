@@ -1,5 +1,6 @@
 package com.sky.config;
 
+import com.sky.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,5 +24,19 @@ public class RedisConfiguration {
         //设置redis key的序列化器
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         return redisTemplate;
+    }
+
+    @Bean
+    public User user1(){
+        User user = new User();
+        user.setId(1L);
+        return user;
+    }
+
+    @Bean
+    public User user2(){
+        User user = new User();
+        user.setId(2L);
+        return user;
     }
 }
