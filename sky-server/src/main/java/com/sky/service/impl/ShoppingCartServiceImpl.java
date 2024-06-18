@@ -74,7 +74,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         .amount(setmeal.getPrice())
                         .build();
             }
-            //shoppingCart.setUserId(BaseContext.getCurrentId());
+            shoppingCart.setUserId(BaseContext.getCurrentId());
             shoppingCart.setNumber(1);
             shoppingCart.setCreateTime(LocalDateTime.now());
             shoppingCartMapper.insert(shoppingCart);
