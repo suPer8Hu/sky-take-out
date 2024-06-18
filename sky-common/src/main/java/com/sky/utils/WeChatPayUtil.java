@@ -41,6 +41,9 @@ public class WeChatPayUtil {
     //申请退款接口地址
     public static final String REFUNDS = "https://api.mch.weixin.qq.com/v3/refund/domestic/refunds";
 
+    //本地支付（扫码支付）下单接口
+    public static final String NATIVE = "https://api.mch.weixin.qq.com/v3/pay/transactions/native";
+
     @Autowired
     private WeChatProperties weChatProperties;
 
@@ -231,5 +234,33 @@ public class WeChatPayUtil {
 
         //调用申请退款接口
         return post(REFUNDS, body);
+    }
+
+    /**
+     *
+     * @param orderNumber 商户订单号
+     * @param total 支付金额
+     * @param description 订单描述
+     * @return
+     * @throws Exception
+     */
+    public String nativePay(String orderNumber,BigDecimal total,String description) throws Exception{
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("appid", weChatProperties.getAppid());
+        jsonObject.put("mchid", weChatProperties.getMchid());
+        jsonObject.put("description", description);
+        jsonObject.put("out_trade_no", orderNumber);
+        jsonObject.put("notify_url", weChatProperties.getNotifyUrl());
+
+        JSONObject amount = new JSONObject();
+        amount.put("total", total.multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP).intValue());
+        amount.put("currency", "CNY");
+        jsonObject.put("amount", amount);
+
+        String body = jsonObject.toJSONString();
+
+        String res = post(NATIVE, body);
+        return res;
     }
 }

@@ -4,6 +4,7 @@ import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * desc
@@ -23,4 +24,9 @@ public interface OrderMapper {
             "                #{estimatedDeliveryTime}, #{deliveryStatus}, #{packAmount}, #{tablewareNumber}, #{tablewareStatus})")
     @Options(useGeneratedKeys = true,keyProperty = "id")
     void insert(Orders order);
+
+    @Select("select * from orders where number = #{number}")
+    Orders getByNumber(String number);
+
+    void update(Orders orders);
 }
