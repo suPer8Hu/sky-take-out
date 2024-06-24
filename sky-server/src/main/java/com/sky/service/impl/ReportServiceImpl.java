@@ -4,6 +4,7 @@ import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.apache.commons.collections4.OrderedMap;
@@ -115,5 +116,67 @@ public class ReportServiceImpl implements ReportService {
                 .build();
 
         return userReportVO;
+    }
+
+    /**
+     * 统计指定范围内每天的订单数量
+     * @param begin
+     * @param end
+     * @return
+     */
+    public OrderReportVO getOrderStatistics(LocalDate begin, LocalDate end) {
+        List<LocalDate> dateList = new ArrayList<>();
+        dateList.add(begin);
+
+        while (!begin.equals(end)){
+            begin = begin.plusDays(1);
+            dateList.add(begin);
+        }
+
+        List<Integer> totalOrderCountList = new ArrayList<>();
+        List<Integer> validOrderCountList = new ArrayList<>();
+
+        Integer totalOrderCountResult = 0;
+        Integer validOrderCountResult = 0;
+
+        for (LocalDate date : dateList) {//查询每天的总订单数和有效订单数
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
+
+            //select count(id) from orders where order_time > ? and order_time < ?
+            Map map = new HashMap();
+            map.put("begin",beginTime);
+            map.put("end",endTime);
+
+            //查询指定时间范围内的总订单数
+            Integer totalOrderCount = orderMapper.countByMap(map);
+            totalOrderCountResult += totalOrderCount;
+            totalOrderCountList.add(totalOrderCount);
+
+            //select count(id) from orders where order_time > ? and order_time < ? and status = 5
+            map.put("status",Orders.COMPLETED);
+            //查询指定时间范围内的有效订单数
+            Integer validOrderCount = orderMapper.countByMap(map);
+            validOrderCountResult += validOrderCount;
+            validOrderCountList.add(validOrderCount);
+        }
+
+        //Integer integer = totalOrderCountList.stream().reduce(Integer::sum).get();
+
+        Double orderCompletionRate = 0.0;
+        if(totalOrderCountResult != 0){
+            orderCompletionRate = validOrderCountResult.doubleValue() / totalOrderCountResult;
+        }
+
+        OrderReportVO orderReportVO = OrderReportVO.builder()
+                .dateList(StringUtils.join(dateList, ","))
+                .orderCountList(StringUtils.join(totalOrderCountList,","))//总订单数
+                .validOrderCountList(StringUtils.join(validOrderCountList,","))//有效订单数
+                .totalOrderCount(totalOrderCountResult)
+                .validOrderCount(validOrderCountResult)
+                .orderCompletionRate(orderCompletionRate)
+                .build();
+
+        return orderReportVO;
     }
 }
