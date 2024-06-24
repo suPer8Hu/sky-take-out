@@ -1,10 +1,12 @@
 package com.sky.service.impl;
 
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import org.apache.commons.collections4.OrderedMap;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 数据统计业务实现
@@ -178,5 +181,39 @@ public class ReportServiceImpl implements ReportService {
                 .build();
 
         return orderReportVO;
+    }
+
+    /**
+     * 统计商品销量排名
+     * @param begin
+     * @param end
+     * @return
+     */
+    public SalesTop10ReportVO getSalesTop10(LocalDate begin, LocalDate end) {
+        //SELECT od.NAME,SUM(od.NUMBER) num FROM order_detail od ,orders o WHERE od.order_id = o.id AND o.status = 5 GROUP BY od.NAME ORDER BY num desc
+
+        List<GoodsSalesDTO> salesDTOList = orderMapper.getSalesTop10();
+
+        /*String nameList = "";
+        for (GoodsSalesDTO goodsSalesDTO : salesDTOList) {
+            String name = goodsSalesDTO.getName();
+            nameList += name + ",";
+            Integer number = goodsSalesDTO.getNumber();
+        }*/
+
+        List<String> nameList = salesDTOList.stream().map(dto -> {
+            return dto.getName();
+        }).collect(Collectors.toList());
+
+        List<Integer> numberList = salesDTOList.stream().map(dto -> {
+            return dto.getNumber();
+        }).collect(Collectors.toList());
+
+        SalesTop10ReportVO top10ReportVO = SalesTop10ReportVO.builder()
+                .nameList(StringUtils.join(nameList,","))//鱼香肉丝,宫保鸡丁,水煮鱼
+                .numberList(StringUtils.join(numberList,","))//260,215,200
+                .build();
+
+        return top10ReportVO;
     }
 }
