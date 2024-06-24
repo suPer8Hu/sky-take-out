@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.Map;
+
 /**
  * desc
  *
@@ -24,4 +26,6 @@ public interface UserMapper {
 
     @Select("select * from user where id = #{id} ")
     User getById(Long id);
+
+    Integer CountByMap(Map map);
 }

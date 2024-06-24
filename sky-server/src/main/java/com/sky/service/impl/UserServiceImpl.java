@@ -17,6 +17,7 @@ import com.sky.vo.UserLoginVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +57,7 @@ public class UserServiceImpl implements UserService {
             //新用户，需要自动完成注册
             user = new User();
             user.setOpenid(openid);
+            user.setCreateTime(LocalDateTime.now());
             //user.setAvatar();
             //user.setPhone();
             userMapper.insert(user);

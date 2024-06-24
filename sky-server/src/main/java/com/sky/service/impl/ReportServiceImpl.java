@@ -2,8 +2,10 @@ package com.sky.service.impl;
 
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
+import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.TurnoverReportVO;
+import com.sky.vo.UserReportVO;
 import org.apache.commons.collections4.OrderedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,8 @@ public class ReportServiceImpl implements ReportService {
 
     @Autowired
     private OrderMapper orderMapper;
-
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 统计指定范围内每天的营业额数据
@@ -67,5 +70,50 @@ public class ReportServiceImpl implements ReportService {
                 .build();
 
         return turnoverReportVO;
+    }
+
+    /**
+     * 统计指定范围内每天的总用户量和新增用户量
+     * @param begin
+     * @param end
+     * @return
+     */
+    public UserReportVO getUserStatistics(LocalDate begin, LocalDate end) {
+        List<LocalDate> dateList = new ArrayList<>();
+        dateList.add(begin);
+
+        while (!begin.equals(end)){
+            begin = begin.plusDays(1);
+            dateList.add(begin);
+        }
+
+        List<Integer> totalUserList = new ArrayList<>();
+        List<Integer> newUserList = new ArrayList<>();
+
+        for (LocalDate date : dateList) {//4.1
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
+
+            Map map = new HashMap<>();
+            map.put("endTime",endTime);
+
+            //统计截止到某天总用户数量
+            Integer totalUserCount = userMapper.CountByMap(map);
+            totalUserList.add(totalUserCount);
+
+            map.put("beginTime",beginTime);
+            //统计指定日期新增用户数量
+            Integer newUserCount = userMapper.CountByMap(map);
+            newUserList.add(newUserCount);
+        }
+
+        //封装返回结果
+        UserReportVO userReportVO = UserReportVO.builder()
+                .dateList(StringUtils.join(dateList, ","))
+                .totalUserList(StringUtils.join(totalUserList, ","))
+                .newUserList(StringUtils.join(newUserList, ","))
+                .build();
+
+        return userReportVO;
     }
 }
